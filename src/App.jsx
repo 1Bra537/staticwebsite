@@ -132,7 +132,7 @@ const TABS = [
   { key: 'home',        icon: '🏛',  label: 'Home'          },
   { key: 'authors',     icon: '📚',  label: 'Authors'       },
   { key: 'add',         icon: '✍️',  label: 'Add Author'    },
-  { key: 'lookup',      icon: '🔍',  label: 'Lookup / Edit' },
+  { key: 'lookup',      icon: '🔍',  label: 'Search / Edit' },
   { key: 'appointment', icon: '📅',  label: 'Appointment'   },
 ]
 
