@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import './App.css'
 
 /* ─── API Config ─────────────────────────────────────────── */
-const BASE_URL = '/api'
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '/api' : 'https://8qyai5wzoh.execute-api.us-east-1.amazonaws.com/dev')
 const API_KEY  = 'Nw2MkcM5s01ig6PDvqpeN8xOkesSjbrC4ELaRSls'
 
 const headers = {
@@ -132,7 +132,11 @@ const TABS = [
   { key: 'home',        icon: '🏛',  label: 'Home'          },
   { key: 'authors',     icon: '📚',  label: 'Authors'       },
   { key: 'add',         icon: '✍️',  label: 'Add Author'    },
+<<<<<<< HEAD
   { key: 'lookup',      icon: '🔍',  label: 'Search / Edit' },
+=======
+  { key: 'lookup',      icon: '🔍',  label: 'Lookup / Edit' },
+>>>>>>> 518fdc9 ( fix: add AWS Amplify config and production API URL fallback)
   { key: 'appointment', icon: '📅',  label: 'Appointment'   },
 ]
 
@@ -174,7 +178,11 @@ function Navbar({ active, onTab }) {
     <nav className="navbar" role="navigation" aria-label="Main navigation">
       <a className="navbar-logo" href="#" onClick={e => { e.preventDefault(); onTab('home') }}>
         <div className="navbar-logo-icon">📖</div>
+<<<<<<< HEAD
         <span className="navbar-logo-text">Lit<span>Legacy</span></span>
+=======
+        <span className="navbar-logo-text">Book<span>Haven</span></span>
+>>>>>>> 518fdc9 ( fix: add AWS Amplify config and production API URL fallback)
       </a>
       <ul className="navbar-tabs" role="list">
         {TABS.map(t => (
@@ -281,7 +289,11 @@ function AuthorsPage({ toast }) {
     <div className="page section-animate">
       <header className="page-header">
         <h1>Author Gallery</h1>
+<<<<<<< HEAD
         <p>Browse all registered authors in the LitLegacy database</p>
+=======
+        <p>Browse all registered authors in the BookHaven database</p>
+>>>>>>> 518fdc9 ( fix: add AWS Amplify config and production API URL fallback)
         <div className="gold-line" />
       </header>
 
@@ -363,7 +375,11 @@ function AddAuthorPage({ toast }) {
     <div className="page section-animate">
       <header className="page-header">
         <h1>Add an Author</h1>
+<<<<<<< HEAD
         <p>Register a new author into the LitLegacy collection</p>
+=======
+        <p>Register a new author into the BookHaven collection</p>
+>>>>>>> 518fdc9 ( fix: add AWS Amplify config and production API URL fallback)
         <div className="gold-line" />
       </header>
 
@@ -738,7 +754,11 @@ function AppointmentPage({ toast }) {
 function Footer() {
   return (
     <footer className="footer">
+<<<<<<< HEAD
       <p>© {new Date().getFullYear()} <span>LitLegacy</span> — Celebrating the world's greatest literary minds.</p>
+=======
+      <p>© {new Date().getFullYear()} <span>BookHaven</span> — Celebrating the world's greatest literary minds.</p>
+>>>>>>> 518fdc9 ( fix: add AWS Amplify config and production API URL fallback)
     </footer>
   )
 }
