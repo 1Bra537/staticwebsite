@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback } from 'react'
 import './App.css'
 
 /* ─── API Config ─────────────────────────────────────────── */
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
-const API_KEY  = 'Nw2MkcM5s01ig6PDvqpeN8xOkesSjbrC4ELaRSls'
+const DIRECT_URL = 'https://8qyai5wzoh.execute-api.us-east-1.amazonaws.com/dev'
+const BASE_URL   = import.meta.env.VITE_API_BASE_URL || '/api'
+const API_KEY    = 'Nw2MkcM5s01ig6PDvqpeN8xOkesSjbrC4ELaRSls'
 
 const headers = {
   'Content-Type': 'application/json',
@@ -14,29 +15,53 @@ const headers = {
 // Lambda returns { statusCode, body: "JSON string" } — parse body if it's a string
 const parseBody = (raw) => {
   if (raw === null || raw === undefined) return null
-  // Already a plain object/array (API GW proxy passes through directly)
   if (typeof raw !== 'string') return raw
   try { return JSON.parse(raw) } catch { return raw }
 }
 
-const call = async (url, opts = {}) => {
-  const r = await fetch(url, { ...opts, headers })
-  if (!r.ok) throw new Error(`HTTP ${r.status}`)
-  const json = await r.json()
-  // Unwrap Lambda proxy envelope if present
-  if (json && typeof json === 'object' && 'statusCode' in json && 'body' in json) {
-    return parseBody(json.body)
+const call = async (endpoint, opts = {}) => {
+  const primaryUrl  = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`
+  const fallbackUrl = endpoint.startsWith('http') ? endpoint : `${DIRECT_URL}${endpoint}`
+
+  const doFetch = async (targetUrl) => {
+    const r = await fetch(targetUrl, { ...opts, headers })
+    if (!r.ok) throw new Error(`HTTP ${r.status}`)
+    const text = await r.text()
+    if (text.trim().startsWith('<')) {
+      throw new Error(`Endpoint returned HTML (${r.status})`)
+    }
+    try {
+      const json = JSON.parse(text)
+      if (json && typeof json === 'object' && 'statusCode' in json && 'body' in json) {
+        return parseBody(json.body)
+      }
+      return json
+    } catch {
+      return text
+    }
   }
-  return json
+
+  try {
+    return await doFetch(primaryUrl)
+  } catch (err1) {
+    if (primaryUrl !== fallbackUrl) {
+      try {
+        return await doFetch(fallbackUrl)
+      } catch (err2) {
+        throw new Error(`Primary (${primaryUrl}): ${err1.message} | Fallback (${fallbackUrl}): ${err2.message}`)
+      }
+    }
+    throw err1
+  }
 }
 
 const api = {
-  listAuthors:  ()     => call(`${BASE_URL}/list-authors`),
-  getAuthor:    (id)   => call(`${BASE_URL}/get-author?id=${encodeURIComponent(id)}`),
-  addAuthor:    (body) => call(`${BASE_URL}/add-author`,    { method: 'POST',   body: JSON.stringify(body) }),
-  updateAuthor: (body) => call(`${BASE_URL}/update-author`, { method: 'PUT',    body: JSON.stringify(body) }),
-  deleteAuthor: (id)   => call(`${BASE_URL}/delete-author`, { method: 'DELETE', body: JSON.stringify({ id }) }),
-  bookAppt:     (body) => call(`${BASE_URL}/book-author`,   { method: 'POST',   body: JSON.stringify(body) }),
+  listAuthors:  ()     => call('/list-authors'),
+  getAuthor:    (id)   => call(`/get-author?id=${encodeURIComponent(id)}`),
+  addAuthor:    (body) => call('/add-author',    { method: 'POST',   body: JSON.stringify(body) }),
+  updateAuthor: (body) => call('/update-author', { method: 'PUT',    body: JSON.stringify(body) }),
+  deleteAuthor: (id)   => call('/delete-author', { method: 'DELETE', body: JSON.stringify({ id }) }),
+  bookAppt:     (body) => call('/book-author',   { method: 'POST',   body: JSON.stringify(body) }),
 }
 
 /* ─── Toast ──────────────────────────────────────────────── */
