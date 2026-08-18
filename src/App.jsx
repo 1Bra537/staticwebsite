@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import './App.css'
 
 /* ─── API Config ─────────────────────────────────────────── */
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? '/api' : 'https://8qyai5wzoh.execute-api.us-east-1.amazonaws.com/dev')
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
 const API_KEY  = 'Nw2MkcM5s01ig6PDvqpeN8xOkesSjbrC4ELaRSls'
 
 const headers = {
